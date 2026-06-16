@@ -1,1 +1,1 @@
-# codebase_for_learning
+# llm_for_material_discovery

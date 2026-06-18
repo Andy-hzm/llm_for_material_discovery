@@ -71,11 +71,12 @@ class EC2:
     def pull_code(self):
         """On the EC2 instance: download code from S3, unzip, install deps."""
         self.run(
+            f"sudo dnf install -y python3.11 && "
             f"aws s3 cp s3://{self.bucket}/{S3_CODE_KEY} /tmp/code.zip && "
             f"mkdir -p {REMOTE_DIR} && "
             f"unzip -o /tmp/code.zip -d {REMOTE_DIR} && "
             f"cd {REMOTE_DIR} && "
-            f"([ -d .venv ] || python3 -m venv .venv) && "
+            f"([ -d .venv ] || python3.11 -m venv .venv) && "
             f".venv/bin/pip install -q --upgrade pip && "
             f".venv/bin/pip install -q -r requirements.txt"
         )

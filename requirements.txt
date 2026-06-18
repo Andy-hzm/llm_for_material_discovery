@@ -3,3 +3,7 @@ pandas
 jupyter
 nbconvert
 ipykernel
+pypdf
+tiktoken
+boto3
+python-dotenv

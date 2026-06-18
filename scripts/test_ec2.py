@@ -18,7 +18,7 @@ load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from infra.ec2 import EC2
 
-ec2 = EC2()
+ec2 = EC2("EC2_INSTANCE_ID")
 
 print("=== Step 1: start ===")
 ec2.start()

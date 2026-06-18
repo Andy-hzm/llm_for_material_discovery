@@ -4,9 +4,9 @@ import boto3
 
 
 class EC2:
-    def __init__(self):
+    def __init__(self, instance_env_var="EC2_INSTANCE_ID"):
         region = os.environ.get("AWS_REGION", "us-east-2")
-        self.instance_id = os.environ["EC2_INSTANCE_ID"]
+        self.instance_id = os.environ[instance_env_var]
         self._ec2 = boto3.client("ec2", region_name=region)
         self._ssm = boto3.client("ssm", region_name=region)
 

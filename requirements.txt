@@ -7,3 +7,4 @@ pypdf
 tiktoken
 boto3
 python-dotenv
+ray

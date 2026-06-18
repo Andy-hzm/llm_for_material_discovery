@@ -8,7 +8,7 @@ import boto3
 # project root = one level above this file (infra/)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REMOTE_DIR = "/home/ec2-user/llm_for_material_discovery"
-S3_CODE_KEY = "code/code.zip"
+S3_CODE_KEY = "materialLLM/code/code.zip"
 
 
 class EC2:

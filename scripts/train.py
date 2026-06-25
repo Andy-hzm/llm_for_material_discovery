@@ -11,7 +11,7 @@ Blocks:
   [x] prepare_model  — apply training technique from config (lora | ...)
   [x] tokenize       — pack texts into fixed-length chunks
   [x] train          — HuggingFace Trainer + loss logging
-  [ ] save           — upload checkpoint + config + loss log to S3
+  [x] save           — upload checkpoint + config + loss log to S3
 """
 
 import json
@@ -199,6 +199,51 @@ def train(model, tokenizer, train_dataset, val_dataset, cfg: dict):
 
 
 # ------------------------------------------------------------------
+# Block 6: Save to S3
+# ------------------------------------------------------------------
+
+def save(trainer, cfg: dict, log_path: str):
+    """
+    Upload LoRA adapter weights, config, and loss log to S3.
+    S3 path: materialLLM/experiments/{run_name}/
+    """
+    import shutil
+
+    run_name = cfg["run_name"]
+    s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-east-2"))
+    s3_prefix = f"materialLLM/experiments/{run_name}"
+
+    # Save adapter weights to a temp dir
+    adapter_dir = f"/tmp/{run_name}_adapter"
+    trainer.model.save_pretrained(adapter_dir)
+
+    # Upload adapter files
+    print(f"\nUploading to s3://{S3_BUCKET}/{s3_prefix}/")
+    for fname in os.listdir(adapter_dir):
+        local_path = os.path.join(adapter_dir, fname)
+        s3_key = f"{s3_prefix}/adapter/{fname}"
+        print(f"  adapter/{fname}")
+        s3.upload_file(local_path, S3_BUCKET, s3_key)
+
+    # Upload config
+    config_path = f"/tmp/{run_name}_config.json"
+    with open(config_path, "w") as f:
+        json.dump(cfg, f, indent=2)
+    s3.upload_file(config_path, S3_BUCKET, f"{s3_prefix}/config.json")
+    print(f"  config.json")
+
+    # Upload loss log
+    s3.upload_file(log_path, S3_BUCKET, f"{s3_prefix}/train_loss.jsonl")
+    print(f"  train_loss.jsonl")
+
+    print(f"\nExperiment saved to s3://{S3_BUCKET}/{s3_prefix}/")
+
+    # Cleanup temp dirs
+    shutil.rmtree(adapter_dir)
+    os.remove(config_path)
+
+
+# ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
 
@@ -221,3 +266,4 @@ if __name__ == "__main__":
     print(f"\nTrain chunks: {len(train_dataset)}, Val chunks: {len(val_dataset)}")
 
     trainer, log_path = train(model, tokenizer, train_dataset, val_dataset, cfg)
+    save(trainer, cfg, log_path)

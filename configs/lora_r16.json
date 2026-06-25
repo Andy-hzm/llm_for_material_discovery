@@ -1,0 +1,14 @@
+{
+    "run_name": "qwen05b-lora-r16-ep3",
+    "technique": "lora",
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"],
+    "epochs": 3,
+    "per_device_train_batch_size": 8,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 2e-5,
+    "warmup_steps": 100,
+    "max_length": 512
+}

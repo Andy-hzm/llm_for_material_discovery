@@ -8,3 +8,9 @@ tiktoken
 boto3
 python-dotenv
 ray
+matplotlib
+transformers
+accelerate
+huggingface_hub
+datasets
+peft
